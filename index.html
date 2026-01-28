@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭花卉饲养指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .search-box {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 8px rgba(118, 75, 162, 0.2);
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            min-width: 100px;
+        }
+        
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+        
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f7ff;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9faff;
+        }
+        
+        .flower-name {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 80px;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+        }
+        
+        .tips {
+            padding: 20px;
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            margin: 20px;
+            border-radius: 6px;
+        }
+        
+        .tips h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .tips li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .tips li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .no-result {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 16px;
+        }
+        
+        .flower-detail {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .flower-detail.active {
+            display: flex;
+        }
+        
+        .detail-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .detail-content .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .detail-content .close:hover {
+            background: #764ba2;
+        }
+        
+        .detail-title {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-right: 40px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+                font-size: 12px;
+                min-width: 70px;
+            }
+            
+            .flower-name {
+                min-width: 60px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .header p {
+                font-size: 12px;
+            }
+            
+            .table-wrapper {
+                padding: 10px;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+                font-size: 11px;
+                min-width: 50px;
+            }
+            
+            .tips {
+                margin: 15px;
+                padding: 15px;
+            }
+            
+            .detail-content {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌸 家庭花卉饲养指南</h1>
+            <p>随时随地查看花卉饲养方法</p>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 搜索花卉名称..." />
+        </div>
+        
+        <div class="table-wrapper">
+            <table id="flowerTable">
+                <thead>
+                    <tr>
+                        <th>花卉名称</th>
+                        <th>光照</th>
+                        <th>浇水</th>
+                        <th>温度</th>
+                        <th>肥料类型</th>
+                        <th>叶面喷水</th>
+                        <th>花期</th>
+                    </tr>
+                </thead>
+                <tbody id="flowerBody">
+                </tbody>
+            </table>
+            <div id="noResult" class="no-result" style="display: none;">
+                未找到相关花卉，请尝试其他关键词
+            </div>
+        </div>
+        
+        <div class="tips">
+            <h3>💡 通用建议</h3>
+            <ul>
+                <li>施肥时选择稀释后的液肥或专用花肥</li>
+                <li>叶面喷水应避免在强光下进行，最好清晨或傍晚</li>
+                <li>多肉植物一般不需叶面喷水，易引起腐烂</li>
+                <li>春夏为生长期，增加施肥和浇水频率</li>
+                <li>每周检查土壤湿度，不同季节调整浇水频率</li>
+                <li>定期清洁叶片，促进光合作用</li>
+                <li>冬季降低温度和浇水，帮助植物休眠</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="flower-detail" id="detailModal">
+        <div class="detail-content">
+            <button class="close" onclick="closeDetail()">×</button>
+            <div class="detail-title" id="detailTitle"></div>
+            <div id="detailInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        const flowersData = [
+            {
+                name: '绿萝',
+                light: '散射光~明亮散射光',
+                water: '保持土壤微湿',
+                temp: '18-25℃',
+                fertilizer: '通用液肥',
+                spray: '需要',
+                bloom: '不开花',
+                tips: '耐阴，生长快，可水培或土培'
+            },
+            {
+                name: '富贵竹',
+                light: '散射光~明亮散射光',
+                water: '水位3-5cm',
+                temp: '18-24℃',
+                fertilizer: '通用液肥',
+                spray: '需要',
+                bloom: '不开花',
+                tips: '多用水培，避免强光照射'
+            },
+            {
+                name: '蝴蝶兰',
+                light: '散射光~明亮散射光',
+                water: '周期浇水，干透浇透',
+                temp: '20-25℃',
+                fertilizer: '磷钾肥',
+                spray: '需要',
+                bloom: '冬春季(1-3月)',
+                tips: '喜湿润环境，忌积水'
+            },
+            {
+                name: '油画婚礼吊兰',
+                light: '散射光~明亮散射光',
+                water: '保持湿润',
+                temp: '18-25℃',
+                fertilizer: '通用液肥',
+                spray: '需要',
+                bloom: '春夏季(4-8月)',
+                tips: '喜温暖湿润，适合吊挂'
+            },
+            {
+                name: '白掌',
+                light: '散射光~明亮散射光',
+                water: '保持湿润',
+                temp: '20-28℃',
+                fertilizer: '通用液肥',
+                spray: '需要',
+                bloom: '春季为主(3-5月)',
+                tips: '开花洁白优雅，喜温暖湿润'
+            },
+            {
+                name: '金钱树',
+                light: '散射光~明亮散射光',
+                water: '干透浇透',
+                temp: '20-30℃',
+                fertilizer: '通用液肥',
+                spray: '需要',
+                bloom: '不常开花',
+                tips: '寓意吉祥，易养护，可水培或土培'
+            },
+            {
+                name: '波士顿蕨',
+                light: '散射光~明亮散射光',
+                water: '保持湿润',
+                temp: '16-25℃',
+                fertilizer: '通用液肥',
+                spray: '需要',
+                bloom: '蕨类不开花',
+                tips: '喜湿润环境，叶形优雅，适合吊挂'
+            },
+            {
+                name: '长寿花',
+                light: '明亮散射光~全日照',
+                water: '干透浇透',
+                temp: '15-25℃',
+                fertilizer: '磷钾肥',
+                spray: '不需要',
+                bloom: '冬春季(12-4月)',
+                tips: '多肉类，易腐烂不宜喷水'
+            },
+            {
+                name: '蓝雪花',
+                light: '充足阳光~全日照',
+                water: '干透浇透',
+                temp: '15-25℃',
+                fertilizer: '磷钾肥',
+                spray: '适度',
+                bloom: '夏秋季(6-10月)',
+                tips: '喜阳，易长虫，定期检查'
+            },
+            {
+                name: '茉莉',
+                light: '充足阳光~全日照',
+                water: '保持湿润',
+                temp: '20-30℃',
+                fertilizer: '磷钾肥',
+                spray: '需要',
+                bloom: '夏季(6-9月)',
+                tips: '香气馥郁，夏季常浇'
+            },
+            {
+                name: '天竺葵',
+                light: '充足阳光~全日照',
+                water: '干透浇透',
+                temp: '15-25℃',
+                fertilizer: '磷钾肥',
+                spray: '适度',
+                bloom: '春夏秋季(4-10月)',
+                tips: '喜阳耐旱，勤修剪促开花'
+            },
+            {
+                name: '太阳花',
+                light: '充足阳光~全日照',
+                water: '干透浇透',
+                temp: '15-30℃',
+                fertilizer: '磷钾肥',
+                spray: '不需要',
+                bloom: '夏季(5-10月)',
+                tips: '多肉植物，耐旱'
+            },
+            {
+                name: '三角梅',
+                light: '充足阳光~全日照',
+                water: '干透浇透',
+                temp: '15-25℃',
+                fertilizer: '磷钾肥',
+                spray: '适度',
+                bloom: '冬季(11-2月)',
+                tips: '喜阳，开花需充足光照'
+            },
+            {
+                name: '鹤望兰',
+                light: '充足阳光~全日照',
+                water: '干透浇透',
+                temp: '15-25℃',
+                fertilizer: '磷钾肥',
+                spray: '适度',
+                bloom: '冬春季(11-3月)',
+                tips: '花朵独特优雅，生长缓慢需耐心'
+            }
+        ];
+
+        function renderTable(flowers) {
+            const tbody = document.getElementById('flowerBody');
+            const noResult = document.getElementById('noResult');
+            
+            tbody.innerHTML = '';
+            
+            if (flowers.length === 0) {
+                noResult.style.display = 'block';
+                return;
+            }
+            
+            noResult.style.display = 'none';
+            
+            flowers.forEach(flower => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="flower-name" onclick="showDetail('${flower.name}')" style="cursor: pointer; color: #667eea; text-decoration: underline;">
+                        ${flower.name}
+                    </td>
+                    <td>${flower.light}</td>
+                    <td>${flower.water}</td>
+                    <td>${flower.temp}</td>
+                    <td>${flower.fertilizer}</td>
+                    <td>${flower.spray}</td>
+                    <td>${flower.bloom}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterFlowers(keyword) {
+            if (!keyword.trim()) {
+                renderTable(flowersData);
+                return;
+            }
+            
+            const filtered = flowersData.filter(flower =>
+                flower.name.toLowerCase().includes(keyword.toLowerCase()) ||
+                flower.light.includes(keyword) ||
+                flower.water.includes(keyword)
+            );
+            
+            renderTable(filtered);
+        }
+
+        function showDetail(flowerName) {
+            const flower = flowersData.find(f => f.name === flowerName);
+            if (!flower) return;
+            
+            const detailTitle = document.getElementById('detailTitle');
+            const detailInfo = document.getElementById('detailInfo');
+            
+            detailTitle.textContent = '🌸 ' + flower.name;
+            
+            detailInfo.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">💡 光照</div>
+                    <div class="detail-value">${flower.light}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">💧 浇水</div>
+                    <div class="detail-value">${flower.water}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">🌡️ 温度</div>
+                    <div class="detail-value">${flower.temp}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">🌾 肥料类型</div>
+                    <div class="detail-value">${flower.fertilizer}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">☁️ 叶面喷水</div>
+                    <div class="detail-value">${flower.spray}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">🌺 花期</div>
+                    <div class="detail-value">${flower.bloom}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">📝 其他要点</div>
+                    <div class="detail-value">${flower.tips}</div>
+                </div>
+            `;
+            
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterFlowers(e.target.value);
+        });
+
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') {
+                closeDetail();
+            }
+        });
+
+        // Initialize
+        renderTable(flowersData);
+    </script>
+</body>
+</html>
